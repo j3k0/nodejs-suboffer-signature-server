@@ -1,0 +1,13 @@
+# See LICENSE folder for this sample’s licensing information.
+#
+# Apple sample code gitignore configuration.
+
+# Finder
+.DS_Store
+
+# The setup file that includes private key environment variables.
+# It is important that this file is not committed to source, so your key information is kept secure.
+start-server
+
+# Node.js package directories.
+node_modules/
