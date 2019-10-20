@@ -1,6 +1,11 @@
 # Generating a Subscription Offer Signature Using Node.js
 
-Generate a signature using your private key and lightweight cryptography libraries.
+> Generate a signature using your private key and lightweight cryptography libraries.
+
+**Changes in this fork:**
+
+ - cleanup and refactoring
+ - fix mistakes in the documentation
 
 ## Overview
 
@@ -12,7 +17,7 @@ The sample demonstrates:
 * Generating a cryptographic signature using your private key.
 * Sending back a response with the signature.
 
-All of the work is done in `routes/index.js`. You set up environment variables for your key ID and your private key in the `start-server` file.
+All of the work is done in `app.js`. You set up environment variables for your key ID and your private key in the `start-server` file.
 
 ## Configure the Sample Code Project
 
@@ -26,18 +31,17 @@ You can optionally open `start-server` with a text editor and replace the exampl
 
 To test the code on your local machine, from the command line:
 * Navigate to the sample code source folder and run `./start-server` from the command line. The server is now running locally and is ready to accept connections on port 3000.
-
 * Open another terminal window and use the `curl` command to send a request. This example command uses the same data listed in the JSON example below: 
 
 ```
-curl -X GET -H "Content-type: application/json" -d '{"appBundleID": "com.example.yourapp", "productIdentifier": "com.example.yoursubscription", "offerID": "your_offer_id", "applicationUsername": "8E3DC5F16E13537ADB45FB0F980ACDB6B55839870DBCE7E346E1826F5B0296CA"}' http://127.0.0.1:3000/offer
+curl -X POST -H "Content-type: application/json" -d '{"appBundleID": "com.example.yourapp", "productIdentifier": "com.example.yoursubscription", "offerID": "your_offer_id", "applicationUsername": "8E3DC5F16E13537ADB45FB0F980ACDB6B55839870DBCE7E346E1826F5B0296CA"}' http://127.0.0.1:3000/offer
 ```
 
 You will get a response that includes the signature.
 
 ## Send a Request
 
-To run this sample code, send a request to this URL: `GET http://<yourdomain>/offer`, where `<yourdomain>` is the domain name or IP address of the server this sample code is running on.
+To run this sample code, send a request to this URL: `POST http://<yourdomain>/offer`, where `<yourdomain>` is the domain name or IP address of the server this sample code is running on.
 
 The request must have a `Content-type` header of `application/json`, and JSON body data with the following format:
 
