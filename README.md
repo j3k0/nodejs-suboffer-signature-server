@@ -6,6 +6,7 @@
 
  - cleanup and refactoring
  - fix mistakes in the documentation
+ - add documentation about usage with [the cordova in-app purchase plugin](https://github.com/j3k0/nodejs-suboffer-signature-server).
 
 ## Overview
 
@@ -53,3 +54,68 @@ The request must have a `Content-type` header of `application/json`, and JSON bo
     "applicationUsername": "8E3DC5F16E13537ADB45FB0F980ACDB6B55839870DBCE7E346E1826F5B0296CA"
 }
 ```
+
+## Usage with Cordova In-App Purchase plugin
+
+Discount offers are supported by the [cordova in-app purchase
+plugin](https://github.com/j3k0/nodejs-suboffer-signature-server). When placing
+an order that includes a discount identifier, you can use a method like below:
+
+```js
+function orderDiscount(productId, discountId) {
+  const product = store.get(productId);
+  if (!store.get(store.APPLICATION)) {
+    alert('Please use "store.verifyPurchases()" before ordering a discount.');
+    return;
+  }
+  if (!store.getApplicationUsername(product)) {
+    alert('Please make sure "store.applicationUsername" is set before ordering a discount.');
+    return;
+  }
+  const request = {
+    appBundleID: store.get(store.APPLICATION).id,
+    productID: productId,
+    offerID: discountId,
+    applicationUsername: store.utils.md5(store.getApplicationUsername()),
+  };
+  store.utils.ajax({
+    url: 'http://localhost:3000/offer',
+    method: 'POST',
+    data: request,
+    success: function(data) {
+      if (data && data.error) {
+        // errorHandler(data);
+        return;
+      }
+      // Example response data: {
+      //   "keyID": "XYZ123456A",
+      //   "nonce": "ffffffff-50b6-4444-b008-888888888888",
+      //   "timestamp": 1568976952688,
+      //   "signature": "...Eowdil0Ve+Ta1Mkz+o+soU2YCL..."
+      // }         
+      const orderData = {
+        applicationUsername: store.getApplicationUsername(),
+        discount: {
+          id: discountId,
+          key: data.keyID,
+          nonce: data.nonce,
+          timestamp: data.timestamp,
+          signature: data.signature,
+        },
+      };
+      store.order(productId, orderData);
+    },
+    error: function(status, message, data) {
+      console.log('error: ' + JSON.stringify({status: status, message: message, data: data}));
+      // errorHandler(data);
+    },
+  });
+}
+```
+
+Notice that discount offers require both an `applicationUsername` and your
+application to make use of `verifyPurchases()` (with a discount-offer
+compatible backend receipt validator)
+
+Please refer to the plugin documentation for more information.
+
